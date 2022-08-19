@@ -12,7 +12,10 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Lottie.asset("assets/emp.json"),
+        child: Lottie.asset(
+          "assets/emp.json",
+          width: 300,
+        ),
       ),
     );
   }
