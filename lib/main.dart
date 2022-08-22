@@ -1,6 +1,5 @@
 import 'package:demo/constants.dart';
 import 'package:demo/pages/splash_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
