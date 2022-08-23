@@ -17,16 +17,15 @@ class MyDatabase extends _$MyDatabase {
   @override
   int get schemaVersion => 1;
 
-  Future<List<EmployeeData>> getEmployees() async =>
-      await select(employee).get();
+  Stream<List<EmployeeData>> getEmployees() => select(employee).watch();
 
   Future<EmployeeData> getEmployee(int id) async =>
       await (select(employee)..where((tbl) => tbl.id.equals(id))).getSingle();
 
-  Future updateEmployee(EmployeeCompanion entity) async =>
-      await update(employee).replace(entity);
+  Future updateEmployee(EmployeeCompanion entity) =>
+      update(employee).replace(entity);
 
-  Future insertEmployee(EmployeeCompanion entity) async =>
+  Future<void> insertEmployee(EmployeeCompanion entity) async =>
       await into(employee).insert(entity);
 
   Future deleteEmployee(int id) async =>

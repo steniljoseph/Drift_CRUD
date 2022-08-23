@@ -1,16 +1,24 @@
+import 'dart:developer';
+
+import 'package:demo/constants.dart';
+import 'package:demo/main.dart';
+import 'package:demo/pages/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' as d;
+import 'package:get/get.dart';
 import '../database/mydatabase.dart';
 
 class AddEmployee extends StatefulWidget {
   final bool isUpdate;
-  late final String? name;
+  final EmployeeCompanion? empDatas;
+  final String? name;
   final String? job;
   final String? place;
 
-  AddEmployee({
+  const AddEmployee({
     Key? key,
     required this.isUpdate,
+    this.empDatas,
     this.name,
     this.job,
     this.place,
@@ -21,27 +29,43 @@ class AddEmployee extends StatefulWidget {
 }
 
 class _AddEmployeeState extends State<AddEmployee> {
-  late MyDatabase myDatabase;
+  String? initialName;
+  String? initialJob;
+  String? initialPlace;
+  final _globalKey = GlobalKey<FormState>();
 
-  final nameController = TextEditingController();
+  // late  MyDatabase myDatabase;
 
-  final jobController = TextEditingController();
+  late EmployeeCompanion emp;
 
-  final locationController = TextEditingController();
+  // var nameController = TextEditingController();
+
+  // final jobController = TextEditingController();
+
+  // final locationController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    myDatabase = MyDatabase();
+    emp = widget.empDatas ??
+        const EmployeeCompanion(
+          name: d.Value(''),
+          job: d.Value(''),
+          place: d.Value(''),
+        );
+    // myDatabase = MyDatabase();
+    // initialName = widget.name;
+    // initialJob = widget.job;
+    // initialPlace = widget.place;
   }
 
   @override
   void dispose() {
     super.dispose();
-    myDatabase.close();
-    nameController.dispose();
-    jobController.dispose();
-    locationController.dispose();
+    // myDatabase.close();
+    // nameController.dispose();
+    // jobController.dispose();
+    // locationController.dispose();
   }
 
   @override
@@ -50,93 +74,108 @@ class _AddEmployeeState extends State<AddEmployee> {
       appBar: AppBar(
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
-            onPressed: () {
-              final entity = EmployeeCompanion(
-                name: d.Value(nameController.text),
-                job: d.Value(jobController.text),
-                place: d.Value(locationController.text),
-              );
-
-              myDatabase.insertEmployee(entity).then(
-                    (value) => ScaffoldMessenger.of(context).showMaterialBanner(
-                      MaterialBanner(
-                        content: Text("New Employee Added $value"),
-                        actions: [
-                          TextButton(
-                            onPressed: () => ScaffoldMessenger.of(context)
-                                .hideCurrentMaterialBanner(),
-                            child: Text("Close"),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
+            icon: const Icon(Icons.save),
+            onPressed: () async {
+              if (widget.isUpdate) {
+                log("updated called");
+                // final entity = EmployeeCompanion(
+                //   name: d.Value(initialName!),
+                //   job: d.Value(initialJob!),
+                //   place: d.Value(initialPlace!),
+                // );
+                await myDatabase.updateEmployee(emp);
+                Get.off(const HomeScreen());
+              } else if (_globalKey.currentState!.validate()) {
+                // final entity = EmployeeCompanion(
+                //   name: d.Value(initialName!),
+                //   job: d.Value(initialJob!),
+                //   place: d.Value(initialPlace!),
+                // );
+                await myDatabase.insertEmployee(emp);
+                Get.off(const HomeScreen());
+              }
             },
           ),
-          SizedBox(
-            width: 10,
-          )
+          kWidth,
         ],
         elevation: 0,
         centerTitle: true,
-        title: widget.isUpdate ? Text("Update Employee") : Text("Add Employee"),
+        title: widget.isUpdate
+            ? const Text("Update Employee")
+            : const Text("Add Employee"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          children: [
-            TextFormField(
-              initialValue: widget.name ?? "",
-              onChanged: (value) => widget.name = value,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please Enter Your Name';
-                }
-                return null;
-              },
-              controller: nameController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Name',
+        padding: const EdgeInsets.all(8),
+        child: Form(
+          key: _globalKey,
+          child: Column(
+            children: [
+              TextFormField(
+                initialValue: emp.name.value,
+                // onChanged: (value) {
+                //   initialName = value;
+                // },
+                onSaved: (value) {
+                  emp = emp.copyWith(name: d.Value(value!));
+                },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  if (value!.isEmpty && value.length < 3) {
+                    return 'Please Enter Your Name';
+                  }
+                  return null;
+                },
+                // controller: nameController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Name',
+                ),
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please Enter Your Job';
-                }
-                return null;
-              },
-              controller: jobController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Job Role',
+              kHeight,
+              TextFormField(
+                initialValue: emp.job.value,
+                // onChanged: (value) => initialJob = value,
+                onSaved: (value) {
+                  emp = emp.copyWith(job: d.Value(value!));
+                },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  if (value!.isEmpty && value.length < 3) {
+                    return 'Please Enter Your Job';
+                  }
+                  return null;
+                },
+                // controller: jobController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Job Role',
+                ),
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please Enter Your Location';
-                }
-                return null;
-              },
-              controller: locationController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Location',
+              kHeight,
+              TextFormField(
+                initialValue: emp.place.value,
+                // onChanged: (value) => initialPlace = value,
+                onSaved: (value) {
+                  emp = emp.copyWith(place: d.Value(value!));
+                },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  if (value!.isEmpty && value.length < 3) {
+                    return 'Please Enter Your Location';
+                  }
+                  return null;
+                },
+                // controller: locationController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Location',
+                ),
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-          ],
+              const SizedBox(
+                height: 50,
+              ),
+            ],
+          ),
         ),
       ),
     );

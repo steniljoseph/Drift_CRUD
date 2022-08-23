@@ -1,7 +1,10 @@
+import 'package:demo/constants.dart';
 import 'package:demo/database/mydatabase.dart';
+import 'package:demo/main.dart';
 import 'package:demo/pages/add_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:drift/drift.dart' as d;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -11,17 +14,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late MyDatabase myDatabase;
+  // late MyDatabase myDatabase;
 
   @override
   void initState() {
-    myDatabase = MyDatabase();
+    // myDatabase = MyDatabase();
     super.initState();
   }
 
   @override
   void dispose() {
-    myDatabase.close();
+    // myDatabase.close();
     super.dispose();
   }
 
@@ -31,36 +34,32 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: Text("Employee CRUD"),
+        title: const Text("Employee CRUD"),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
-              height: 10,
-            ),
-            FutureBuilder<List<EmployeeData>>(
-              future: myDatabase.getEmployees(),
+            kHeight,
+            StreamBuilder<List<EmployeeData>>(
+              stream: myDatabase.getEmployees(),
               builder: (context, snapshot) {
-                final employees = snapshot.data!;
-                if (snapshot.data == null) {
-                  return Center(
+                final employees = snapshot.data;
+                if (snapshot.data == null || snapshot.data!.isEmpty) {
+                  return const Center(
                     child: Text("No Employee Found"),
                   );
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
                 return ListView.separated(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: employees.length,
-                  separatorBuilder: (context, index) => SizedBox(
-                    height: 10,
-                  ),
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: employees!.length,
+                  separatorBuilder: (context, index) => kHeight,
                   itemBuilder: (context, index) {
                     final employee = employees[index];
                     return ListTile(
@@ -71,18 +70,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             Get.to(AddEmployee(
                               isUpdate: true,
-                              job: employee.job,
-                              name: employee.name,
-                              place: employee.place,
+                              empDatas: EmployeeCompanion(
+                                id: d.Value(employee.id),
+                                name: d.Value(employee.name),
+                                job: d.Value(employee.job),
+                                place: d.Value(employee.place),
+                              ),
                             ));
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.edit,
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
-                          icon: Icon(
+                          onPressed: () {
+                            final id = employees[index].id;
+                            myDatabase.deleteEmployee(id);
+                          },
+                          icon: const Icon(
                             Icons.delete,
                           ),
                         )
@@ -96,9 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () => Get.to(
-          AddEmployee(
+          const AddEmployee(
             isUpdate: false,
           ),
         ),
