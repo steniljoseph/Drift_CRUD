@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:demo/constants.dart';
 import 'package:demo/main.dart';
-import 'package:demo/pages/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' as d;
 import 'package:get/get.dart';
@@ -76,24 +73,31 @@ class _AddEmployeeState extends State<AddEmployee> {
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: () async {
-              if (widget.isUpdate) {
-                log("updated called");
-                // final entity = EmployeeCompanion(
-                //   name: d.Value(initialName!),
-                //   job: d.Value(initialJob!),
-                //   place: d.Value(initialPlace!),
-                // );
-                await myDatabase.updateEmployee(emp);
-                Get.off(const HomeScreen());
-              } else if (_globalKey.currentState!.validate()) {
-                // final entity = EmployeeCompanion(
-                //   name: d.Value(initialName!),
-                //   job: d.Value(initialJob!),
-                //   place: d.Value(initialPlace!),
-                // );
-                await myDatabase.insertEmployee(emp);
-                Get.off(const HomeScreen());
-              }
+              _globalKey.currentState!.save();
+              widget.isUpdate
+                  ? await myDatabase.updateEmployee(emp)
+                  : await myDatabase.insertEmployee(emp);
+              Get.back();
+
+              // if (widget.isUpdate) {
+              //   log("updated called");
+              //   // final entity = EmployeeCompanion(
+              //   //   name: d.Value(initialName!),
+              //   //   job: d.Value(initialJob!),
+              //   //   place: d.Value(initialPlace!),
+              //   // );
+              //   await myDatabase.updateEmployee(emp);
+              //   Get.off(const HomeScreen());
+              // } else if (_globalKey.currentState.save()) {
+              //   log("add called");
+              //   // final entity = EmployeeCompanion(
+              //   //   name: d.Value(initialName!),
+              //   //   job: d.Value(initialJob!),
+              //   //   place: d.Value(initialPlace!),
+              //   // );
+              //   await myDatabase.insertEmployee(emp);
+              //   Get.off(const HomeScreen());
+              // }
             },
           ),
           kWidth,
@@ -118,13 +122,13 @@ class _AddEmployeeState extends State<AddEmployee> {
                 onSaved: (value) {
                   emp = emp.copyWith(name: d.Value(value!));
                 },
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value!.isEmpty && value.length < 3) {
-                    return 'Please Enter Your Name';
-                  }
-                  return null;
-                },
+                // autovalidateMode: AutovalidateMode.onUserInteraction,
+                // validator: (value) {
+                //   if (value!.isEmpty && value.length < 3) {
+                //     return 'Please Enter Your Name';
+                //   }
+                //   return null;
+                // },
                 // controller: nameController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -138,13 +142,13 @@ class _AddEmployeeState extends State<AddEmployee> {
                 onSaved: (value) {
                   emp = emp.copyWith(job: d.Value(value!));
                 },
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value!.isEmpty && value.length < 3) {
-                    return 'Please Enter Your Job';
-                  }
-                  return null;
-                },
+                // autovalidateMode: AutovalidateMode.onUserInteraction,
+                // validator: (value) {
+                //   if (value!.isEmpty && value.length < 3) {
+                //     return 'Please Enter Your Job';
+                //   }
+                //   return null;
+                // },
                 // controller: jobController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -158,13 +162,13 @@ class _AddEmployeeState extends State<AddEmployee> {
                 onSaved: (value) {
                   emp = emp.copyWith(place: d.Value(value!));
                 },
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value!.isEmpty && value.length < 3) {
-                    return 'Please Enter Your Location';
-                  }
-                  return null;
-                },
+                // autovalidateMode: AutovalidateMode.onUserInteraction,
+                // validator: (value) {
+                //   if (value!.isEmpty && value.length < 3) {
+                //     return 'Please Enter Your Location';
+                //   }
+                //   return null;
+                // },
                 // controller: locationController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
