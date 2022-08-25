@@ -8,17 +8,11 @@ import '../database/mydatabase.dart';
 class AddEmployee extends StatefulWidget {
   final bool isUpdate;
   final EmployeeCompanion? empDatas;
-  final String? name;
-  final String? job;
-  final String? place;
 
   const AddEmployee({
     Key? key,
     required this.isUpdate,
     this.empDatas,
-    this.name,
-    this.job,
-    this.place,
   }) : super(key: key);
 
   @override

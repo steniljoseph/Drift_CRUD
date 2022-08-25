@@ -1,7 +1,7 @@
 import 'package:demo/constants.dart';
 import 'package:demo/database/mydatabase.dart';
 import 'package:demo/main.dart';
-import 'package:demo/pages/add_employee.dart';
+import 'package:demo/pages/add_update_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:drift/drift.dart' as d;
@@ -68,15 +68,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       trailing: Wrap(children: [
                         IconButton(
                           onPressed: () {
-                            Get.to(AddEmployee(
-                              isUpdate: true,
-                              empDatas: EmployeeCompanion(
-                                id: d.Value(employee.id),
-                                name: d.Value(employee.name),
-                                job: d.Value(employee.job),
-                                place: d.Value(employee.place),
+                            Get.to(
+                              AddEmployee(
+                                isUpdate: true,
+                                empDatas: EmployeeCompanion(
+                                  id: d.Value(employee.id),
+                                  name: d.Value(employee.name),
+                                  job: d.Value(employee.job),
+                                  place: d.Value(employee.place),
+                                ),
                               ),
-                            ));
+                            );
                           },
                           icon: const Icon(
                             Icons.edit,
